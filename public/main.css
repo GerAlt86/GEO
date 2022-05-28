@@ -1,0 +1,71 @@
+.svg_graf{
+	background: #fefefe;
+	width:1000px;
+	height:200px;
+	border:1px solid black;
+}
+.max_value{
+    position: absolute;
+    color: red;
+    text-align: right;
+    right: 1140px;
+    margin-top: 5px;
+}
+.min_value{
+    position: absolute;
+    color: red;
+    text-align: right;
+    right: 1140px;
+    margin-top: 165px;
+}
+.legend_row{
+	width:1000px;
+	margin:0 auto;
+}
+.legend_div{
+	display:flex;
+	justify-content: space-between;
+}
+
+.dotted_hover .tooltip {
+   visibility: hidden
+}
+
+.dotted_hover:hover .tooltip {
+  visibility: visible;
+  position: absolute;
+ }
+
+.dotted_hover:hover:after .tooltip{
+ position: relative;
+ left: 0;
+ top: 100%;
+ white-space: nowrap;
+}
+/*
+.tooltip text {
+ fill: black;
+ font-size: 12px;
+ font-family: sans-serif; 
+}
+
+.tooltip rect {
+ fill: yellow;
+ stroke: blue;
+}
+*/
+#tooltip {
+  background: cornsilk;
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 5px;
+}
+.bd-subnavbar {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+	background:#efefef;
+	opacity:0.98;
+	z-index:1;
+	border-bottom:1px solid black;
+}

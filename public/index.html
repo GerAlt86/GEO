@@ -1,0 +1,83 @@
+<html>
+	<head>
+		<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous"/>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+		<link href="main.css" rel="stylesheet"/> 
+	</head>
+	<body>
+		<div id="app">
+			<nav class="bd-subnavbar">
+				<div class="container">
+					<div class="d-flex justify-content-between">
+						<div class="text-uppercase fw-bold">Програмный комплекс просмотра валют в реальном времени</div>
+						<div class="text-lowercase fw-bold">Время сервера: {{current_time}}</div>
+					</div>
+				</div>
+			</nav>
+			<div class="container">
+			<!-- <h1 class="text-center">Курсы валют1</h1>-->
+				<div>
+					<div v-if="!is_connected">
+						Ждите,идет соединение с сервером...
+					</div>
+					<div v-if="is_connected">
+						<div class="border border-primary m-1" v-for="item in currency_items">
+							<h2 class="mb-0 mt-2 text-center">{{item.name}}<span v-if="item.is_valid">: {{item.current_price}}</span></h2>
+							<div v-if="item.is_valid">
+								<div class="small text-center mb-0 mt-0">Время выдачи: {{item.current_time}}</div>
+								<div class="m-1 text-center position-relative">
+									<div class="max_value" v-if="item.max_price!=item.min_price">{{item.max_price}}</div>
+									<div class="min_value" v-if="item.max_price!=item.min_price">{{item.min_price}}</div>
+									<svg class="svg_graf">
+										<!--ну невозможно же работать в перевернутой системе координат! -->
+										<g transform="translate(0,200)">
+										<g transform="scale(1,-1)">							
+										<!--Оси -->
+										<!-- 
+										<line x1="0" y1="0" x2="0" y2="200" stroke-width="2"   fill="transparent" stroke="rgb(0,0,0)"/>  
+										<line x1="0" y1="200" x2="1000" y2="200" stroke-width="2"  fill="transparent" stroke="rgb(0,0,0)"/>  
+										-->
+										
+										<!--Промежуточные оси--->
+										<!--горизонтальные -->
+										<line x1="0" y1="50"  x2="2000" y2="50"  stroke-width="1" stroke="rgb(173, 216, 230)"/>
+										<line x1="0" y1="100" x2="2000" y2="100" stroke-width="1" stroke="rgb(173, 216, 230)"/>
+										<line x1="0" y1="150" x2="2000" y2="150" stroke-width="1" stroke="rgb(173, 216, 230)"/>
+										
+										<!--max и min если происходили изменения-->
+										 <line v-if="item.max_price!=item.min_price" x1="0" y1="20"   x2="2000"  y2="20"  style="stroke-dasharray: 10 5; stroke: red; stroke-width: 1px;"/>
+										 <line v-if="item.max_price!=item.min_price" x1="0" y1="180"   x2="2000" y2="180" style="stroke-dasharray: 10 5; stroke: red; stroke-width: 1px;"/>
+										
+										<!--График -->
+										<polyline
+										fill="none"
+										stroke="#0074d9"
+										stroke-width="3"
+										v-bind:points="item.polyline"
+										/>
+										<!--массив точек -->	
+										<g v-html="draw_reacts(item.rects)"></g>
+									</svg> 
+									<div style="display:none">
+										{{item.point_coordinates}}
+									</div>
+									<div class="legend_row">
+										<div class="legend_div">
+											<small><span class="fw-bold text-primary">Начало: {{item.start.mean}}</span> | {{item.start.time}} </small>
+											<small>{{item.finish.time}} | <span class="fw-bold text-primary">Конец: {{item.finish.mean}}</span></small>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div v-if="!item.is_valid">
+								<h3 class="text-center text-danger">Данных нет</h3>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="vue.js"></script>
+	</body>
+</html>
