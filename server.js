@@ -16,12 +16,12 @@ function  update_item(data,name){
 	var number_item=settings.valid_symbols.indexOf(name)
 	if(data.data[number_item].is_valid==true){
 		influx.query(
-			`SELECT mean("price") AS "meanvalue" FROM "mycurrency" WHERE "symbol"='`+name+`'  GROUP BY time(`+settings.server_groupe_time+`)`, 
+			`SELECT mean("price") AS "meanvalue" FROM "mycurrency" WHERE "symbol"='`+name+`'  GROUP BY time(3h)` 
 		).catch(err=>{
 			reject(err)
 		})
 		.then((results) => {
-			console.log();
+			console.log('count',results.length);
 		});
 	}
 }
@@ -79,6 +79,7 @@ function intervalFunc(wsClient) {
 	var current_date = new Date();//смотрим на текущее время сервера
 	var data = new Object({
 		'current_time':user_time(current_date),
+		'server_groupe_time': settings.server_groupe_time,
 		'data': data_items,	
 	});
 	//собираем последние значения
@@ -102,7 +103,7 @@ function intervalFunc(wsClient) {
 	}).then(() =>{
 		//скорее всего тут можно получить значения сразу с группирование,но у меня не получилось, пребираем ручками
 		influx.query(
-			`select mean("price") from "mycurrency" group by time(30m),"symbol"`
+			`select mean("price") from "mycurrency" group by time(`+settings.server_groupe_time+`),"symbol"`
 		).catch(err=>{
 			console.log(err)
 		})
@@ -164,11 +165,11 @@ function intervalFunc(wsClient) {
 						if(data.data[i].max_price>data.data[i].min_price){
 							y=((data.data[i].points[j].mean-data.data[i].min_price)*160/(data.data[i].max_price-data.data[i].min_price))+20; //тонкий момент  -на графике мы показываем изменение относительно максимума и минимума	
 							data.data[i].polyline+=x+','+y+' ';
-							data.data[i].rects+='<g><title>'+data.data[i].points[j].mean+'</title><rect width="10px" height="10px" x="'+(x-5)+'px" y="'+(y-5)+'px" rx="0" fill="red"/></react></g>';
+							data.data[i].rects+='<g><title>'+data.data[i].points[j].mean+' | '+data.data[i].points[j].time+'</title><rect width="10px" height="10px" x="'+(x-5)+'px" y="'+(y-5)+'px" rx="0" fill="red"/></react></g>';
 						}else{
 							//на случай если цена не меняется
 							data.data[i].polyline+=x+',100'+' ';
-							data.data[i].rects+='<rect width="10px" height="10px" x="'+(x-5)+'px" y="95px" rx="0" fill="red" data-number="'+j+'" data-time="'+data.data[i].points[j].time+'" data-value="'+data.data[i].points[j].mean+'"/></react>'
+							data.data[i].rects+='<g><title>'+data.data[i].points[j].mean+' | '+data.data[i].points[j].time+'</title><rect width="10px" height="10px" x="'+(x-5)+'px" y="95px" rx="0" fill="red" data-number="'+j+'"/></react></g>'
 						}
 						x=x+step; 
 						data.data[i].test.x=x;
@@ -183,13 +184,13 @@ function intervalFunc(wsClient) {
 }
 
 function onConnect(wsClient) {
-	//console.log('Новый пользователь');
+	console.log('Новый пользователь');
 	intervalFunc(wsClient);
 	var myTimer = setInterval(intervalFunc, settings.socket_delay,wsClient);
 
 	//закрытие соеденения
 	wsClient.on('close', function() {
-		//console.log('Пользователь отключился');
+		console.log('Пользователь отключился');
 	});
 }                                           
 

@@ -5,6 +5,7 @@ var app = new Vue({
 		currency_items: new Array(),
 		is_connected:false,
 		current_time: '',
+		server_groupe_time:'',
 	},
 	methods:{
 		read_data: function() {
@@ -19,8 +20,9 @@ var app = new Vue({
 				var message_data=JSON.parse(message.data);
 				console.log('Время сервера: ' + message_data.current_time);
 				console.log('Данные:',message_data);
-				app.currency_items=message_data.data;
-				app.current_time=message_data.current_time;
+				app.currency_items		=message_data.data;
+				app.current_time		=message_data.current_time;
+				app.server_groupe_time	=message_data.server_groupe_time;
 			};
 			
 			myWs.onclose = function(event) {
@@ -29,9 +31,7 @@ var app = new Vue({
 				} else {
 					console.log('Обрыв соединения'); // например, "убит" процесс сервера
 				}
-				//app.is_connected=false;
-				//прописать на переподключени
-				//app.read_data();
+				//здесь нужно прописать переподключение, но мы предполагаем что у нас сервак никогда не падает:)	
 			};
 			
 			myWs.onerror = function(error) {
