@@ -20,7 +20,7 @@ function intervalFunc() {
 		for(let i=0;i<res.length;i++){
 			for(let j=0;j<settings.valid_symbols.length;j++){
 				if(res[i].symbol==settings.valid_symbols[j]){
-					console.log(res[i]);
+					//console.log(res[i]);
 					bd_json.push({
 						measurement: 'mycurrency',
 						tags: { symbol: res[i].symbol},
@@ -30,6 +30,8 @@ function intervalFunc() {
 			}
 		}
 		influx.writePoints(bd_json);
+		//var now = new Date().toLocaleTimeString();
+		//console.log('---demon',now);
 	});
 }
 setInterval(intervalFunc, settings.frequency);

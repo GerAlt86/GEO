@@ -21,7 +21,7 @@ function  update_item(data,name){
 			reject(err)
 		})
 		.then((results) => {
-			console.log('count',results.length);
+			//console.log('count',results.length);
 		});
 	}
 }
@@ -184,13 +184,13 @@ function intervalFunc(wsClient) {
 }
 
 function onConnect(wsClient) {
-	console.log('Новый пользователь');
+	//console.log('Новый пользователь');
 	intervalFunc(wsClient);
 	var myTimer = setInterval(intervalFunc, settings.socket_delay,wsClient);
 
 	//закрытие соеденения
 	wsClient.on('close', function() {
-		console.log('Пользователь отключился');
+		//console.log('Пользователь отключился');
 	});
 }                                           
 

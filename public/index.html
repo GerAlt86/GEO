@@ -7,26 +7,38 @@
 	</head>
 	<body>
 		<div id="app">
-			<nav class="bd-subnavbar">
-				<div class="container">
-					<div class="d-flex justify-content-between">
-						<div class="text-uppercase fw-bold">Програмный комплекс просмотра валют в реальном времени</div>
-						<div class="text-lowercase fw-bold">Время сервера: {{current_time}}</div>
+			<div v-if="!is_connected">
+				<h1 class="d-flex justify-content-center mt-5">
+					<div class="spinner-grow text-dark" role="status">
+					  <span class="visually-hidden">Loading...</span>
 					</div>
-					<div class="text-center small">Период группирования на графиках:{{server_groupe_time}}</div>
+					Ждите,идет соединение с сервером...
+				</h1>
+			</div>
+			<div  v-if="is_connected">
+				<div v-if="!is_get_data">
+					<h1 class="d-flex justify-content-center mt-5">
+						<div class="spinner-grow  text-primary" role="status">
+						  <span class="visually-hidden">Loading...</span>
+						</div>
+						Ждите,идет получение данных от сервера...
+					</h1>
 				</div>
-			</nav>
-			<div class="container">
-			<!-- <h1 class="text-center">Курсы валют1</h1>-->
-				<div>
-					<div v-if="!is_connected">
-						Ждите,идет соединение с сервером...
-					</div>
-					<div v-if="is_connected">
+				<div v-if="is_get_data">
+					<nav class="bd-subnavbar">
+						<div class="container">
+							<div class="d-flex justify-content-between">
+								<div class="text-uppercase fw-bold">Програмный комплекс просмотра валют в реальном времени</div>
+								<div class="text-lowercase fw-bold" title="Время сервер-время последней выдачи">Время сервера: {{current_time}}</div>
+							</div>
+							<div class="text-center small">Период группирования на графиках: {{server_groupe_time}}</div>
+						</div>
+					</nav>
+					<div class="container">
 						<div class="border border-primary m-1" v-for="item in currency_items">
 							<h2 class="mb-0 mt-2 text-center">{{item.name}}<span v-if="item.is_valid">: {{item.current_price}}</span></h2>
 							<div v-if="item.is_valid">
-								<div class="small text-center mb-0 mt-0">Время выдачи: {{item.current_time}}</div>
+								<div class="small text-center mb-0 mt-0" title="Время БД данной валюты">Время БД: {{item.current_time}}</div>
 								<div class="m-1 text-center position-relative">
 									<div class="max_value" v-if="item.max_price!=item.min_price">{{item.max_price}}</div>
 									<div class="min_value" v-if="item.max_price!=item.min_price">{{item.min_price}}</div>

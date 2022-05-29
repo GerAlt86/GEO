@@ -1,28 +1,35 @@
-const myWs = new WebSocket('ws://92.255.78.131:8099');
+const url = 'ws://92.255.78.131:8099';
 var app = new Vue({
     el: '#app',
     data: {
 		currency_items: new Array(),
-		is_connected:false,
+		is_connected:false,			//индикатор коннекта
+		is_get_data:false,			//индикатор получения данных	
 		current_time: '',
 		server_groupe_time:'',
 	},
 	methods:{
 		read_data: function() {
+			console.log('read_data_start');
+			myWs = new WebSocket(url);
+			
 			//app.is_connected=false;
 			myWs.onopen = function () {
 				console.log('connect');
+				 app.is_connected=true;
 			};
 			// обработчик сообщений от сервера
 			myWs.onmessage = function (message) {
 				//ставим коннект только когда что-то получили,а не когда только законнектились
-				app.is_connected=true;
 				var message_data=JSON.parse(message.data);
 				console.log('Время сервера: ' + message_data.current_time);
 				console.log('Данные:',message_data);
 				app.currency_items		=message_data.data;
 				app.current_time		=message_data.current_time;
 				app.server_groupe_time	=message_data.server_groupe_time;
+				app.is_get_data=true;
+				
+				//в теории тут надо еще проставить таймер на неприятие данных -неприняли данные, разрываем коннект, но это под вопросом
 			};
 			
 			myWs.onclose = function(event) {
@@ -31,12 +38,20 @@ var app = new Vue({
 				} else {
 					console.log('Обрыв соединения'); // например, "убит" процесс сервера
 				}
-				//здесь нужно прописать переподключение, но мы предполагаем что у нас сервак никогда не падает:)	
+				app.is_connected=false;
+			    app.is_get_data=false;
+				myWs.close();
+				myWs = null;
+			    //app.is_connected=false;
+			    //app.is_get_data=false;
+			    //setTimeout(() => app.read_data(), 2000);
+				 //переподключаемся
+			    setTimeout(() => app.read_data(), 2000);
 			};
 			
 			myWs.onerror = function(error) {
-			   app.is_connected=false;
-			   app.read_data();
+			   console.log('Ошибка соеденения');
+			   //анализ ошибок?
 			};
 		},
 		draw_reacts: function(reacts){
