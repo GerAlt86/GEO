@@ -12,8 +12,6 @@ var app = new Vue({
 		read_data: function() {
 			console.log('read_data_start');
 			myWs = new WebSocket(url);
-			
-			//app.is_connected=false;
 			myWs.onopen = function () {
 				console.log('connect');
 				 app.is_connected=true;
@@ -29,7 +27,7 @@ var app = new Vue({
 				app.server_groupe_time	=message_data.server_groupe_time;
 				app.is_get_data=true;
 				
-				//в теории тут надо еще проставить таймер на неприятие данных -неприняли данные, разрываем коннект, но это под вопросом
+				//в теории тут надо еще проставить таймер на неприятие данных -неприняли данные(Но при существующем конекте), разрываем коннект, но это под вопросом
 			};
 			
 			myWs.onclose = function(event) {
@@ -42,9 +40,6 @@ var app = new Vue({
 			    app.is_get_data=false;
 				myWs.close();
 				myWs = null;
-			    //app.is_connected=false;
-			    //app.is_get_data=false;
-			    //setTimeout(() => app.read_data(), 2000);
 				 //переподключаемся
 			    setTimeout(() => app.read_data(), 2000);
 			};
