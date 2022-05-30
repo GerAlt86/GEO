@@ -1,4 +1,4 @@
-var settings = require('./settings');
+const settings = require('./settings');
 const Influx = require('influx');
 const influx= new Influx.InfluxDB({
 	host: settings.db_host,
@@ -13,7 +13,7 @@ wsServer.on('connection', onConnect);
 
 
 function  update_item(data,name){
-	var number_item=settings.valid_symbols.indexOf(name)
+	const number_item=settings.valid_symbols.indexOf(name)
 	if(data.data[number_item].is_valid==true){
 		influx.query(
 			`SELECT mean("price") AS "meanvalue" FROM "mycurrency" WHERE "symbol"='`+name+`'  GROUP BY time(3h)` 
@@ -28,7 +28,7 @@ function  update_item(data,name){
 
 
 function user_time(input_date){
-	var date = new Date(input_date);
+	const date = new Date(input_date);
 	Year=date.getFullYear(input_date);
 	Month=date.getMonth(input_date)+1;
 	if(Month<10){
@@ -58,7 +58,7 @@ function user_time(input_date){
 
 function intervalFunc(wsClient) {  
 	
-	var data_items=new Array();  
+	const data_items=new Array();  
 	for(let i=0;i<settings.valid_symbols.length;i++){
 		//собираем массивчик на каждую найденную валюту 
 		data_items.push({
@@ -76,8 +76,8 @@ function intervalFunc(wsClient) {
 			'test':new Object({}),
 		});
 	}
-	var current_date = new Date();//смотрим на текущее время сервера
-	var data = new Object({
+	const current_date = new Date();//смотрим на текущее время сервера
+	const data = new Object({
 		'current_time':user_time(current_date),
 		'server_groupe_time': settings.server_groupe_time,
 		'data': data_items,	
@@ -108,9 +108,9 @@ function intervalFunc(wsClient) {
 			console.log(err)
 		})
 		.then((results) => {
-			var max_massive = Array(settings.valid_symbols.length).fill(0);
-			var min_massive = Array(settings.valid_symbols.length).fill(0);
-			var number,temp_round_mean;
+			const max_massive = Array(settings.valid_symbols.length).fill(0);
+			const min_massive = Array(settings.valid_symbols.length).fill(0);
+			let number,temp_round_mean;
 			for(let i=0;i<results.length;i++){
 				//выясняем номер вылюты, в которое будем добавлять измерение
 				number=settings.valid_symbols.indexOf(results[i].symbol);
@@ -139,11 +139,12 @@ function intervalFunc(wsClient) {
 				}
 			}
 			//перебираем то что получилось
+			let points_length;
 			for(let i=0;i<settings.valid_symbols.length;i++){
 				if(data.data[i].is_valid==true){
 					data.data[i].max_price=max_massive[i];
 					data.data[i].min_price=min_massive[i];
-					var points_length=data.data[i].points.length;
+					points_length=data.data[i].points.length;
 					//стартовая точка
 					data.data[i].start.time=data.data[i].points[0].time;		
 					data.data[i].start.mean=data.data[i].points[0].mean;
@@ -157,8 +158,8 @@ function intervalFunc(wsClient) {
 					data.data[i].polyline='';
 					// а также массив квадратов-координатc
 					data.data[i].rects=''
-					var x=0,y;
-					var step; //шаг приращения по X
+					let x=0,y;
+					let step; //шаг приращения по X
 					step =1000/(points_length-1);
 					data.data[i].test.step=step;
 					for(let j=0;j<points_length;j++){
@@ -186,7 +187,7 @@ function intervalFunc(wsClient) {
 function onConnect(wsClient) {
 	//console.log('Новый пользователь');
 	intervalFunc(wsClient);
-	var myTimer = setInterval(intervalFunc, settings.socket_delay,wsClient);
+	const myTimer = setInterval(intervalFunc, settings.socket_delay,wsClient);
 
 	//закрытие соеденения
 	wsClient.on('close', function() {
