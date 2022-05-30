@@ -11,22 +11,6 @@ const wsServer = new WebSocket.Server({port: settings.socket_port});
 wsServer.on('connection', onConnect);
 
 
-
-function  update_item(data,name){
-	const number_item=settings.valid_symbols.indexOf(name)
-	if(data.data[number_item].is_valid==true){
-		influx.query(
-			`SELECT mean("price") AS "meanvalue" FROM "mycurrency" WHERE "symbol"='`+name+`'  GROUP BY time(3h)` 
-		).catch(err=>{
-			reject(err)
-		})
-		.then((results) => {
-			//console.log('count',results.length);
-		});
-	}
-}
-
-
 function user_time(input_date){
 	const date = new Date(input_date);
 	Year=date.getFullYear(input_date);
